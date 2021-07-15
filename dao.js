@@ -1,5 +1,6 @@
 "use strict";
 
+const Articolo = require('./articolo.js');
 const db = require('./db.js');
 const bcrypt = require('bcrypt');
 
@@ -46,3 +47,67 @@ exports.getUser = function (username, password) {
         });
     });
 }
+
+//  --- ARTICOLI ---
+
+const creaArticolo = function (dbArticolo) {
+    return new Articolo(dbArticolo.id, dbArticolo.titolo, dbArticolo.descrizione, dbArticolo.categoria, dbArticolo.immagine, dbArticolo.id_autore);
+}
+
+/**
+ * Restituisce tutti gli articoli presenti nel db.
+ *
+ * @returns {Promise<>}
+ */
+exports.getAllArticles = function () {
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT * FROM articoli';
+        db.all(sql, (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                let articoli = rows.map(row => creaArticolo(row));
+                resolve(articoli);
+            }
+        });
+    });
+}
+
+/**
+ * Restituisce un articolo dato il suo id.
+ */
+exports.getArticlesById = function (idArticolo) {
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT * FROM articoli WHERE id = ?';
+        db.get(sql, idArticolo, (err, row) => {
+            if (err)
+                reject(err);
+            else if (row === undefined)
+                resolve({error: 'Articolo non trovato.'});
+            else {
+                const articolo = creaArticolo(row);
+                resolve(articolo);
+            }
+        });
+    });
+}
+
+/**
+ * Inserisce un nuovo articolo nel database e restituisce l'id dell'articolo inserito.
+ * "this.lastID" viene usato per restituire l'id dell'articolo.
+ */
+exports.addArticle = function (articolo) {
+    return new Promise((resolve, reject) => {
+        const sql = 'INSERT INTO tasks(titolo, descrizione, categoria, immagine, id_autore) VALUES(?,?,?,?,?)';
+        db.run(sql, [articolo.titolo, articolo.descrizione, articolo.categoria, articolo.immagine, articolo.id_autore], function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this.lastID);
+            }
+        });
+    });
+}
+
+
+//  ----------------
