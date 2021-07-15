@@ -1,0 +1,15 @@
+{
+  "name": "Progetto_MetWeb",
+  "version": "1.0.0",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-validator": "^6.12.0",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "bcrypt": "^5.0.1",
+    "express-session": "^1.17.2"
+  }
+}
